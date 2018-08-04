@@ -19,7 +19,6 @@ pre{font-family:'微软雅黑'}
 h3{margin:10px 0;}
 .layinput{height: 22px;line-height: 22px;width: 150px;margin: 0;}
 </style>
-
 <body>
 	<div class="box">
 		<div class="demo1">
@@ -31,7 +30,71 @@ h3{margin:10px 0;}
 				<input id="formsm" type="button" class="button button-primary"  value="下载" onclick="formSubmit()">
 				<!--<input type="submit" class="button button-primary"  value="下载" >-->
 			</form>
-		</div>
+        </div>
+        <div class="demo2">
+            <center>
+            <table class="table" style="border-collapse: initial;">
+                <thead class="table-header">
+                <tr style="height: 40px">
+                    <th colspan="9" style="text-align: center" id="title">data table</th>
+                <tr>
+                <tr>
+                    <th width="140">MAC地址</th>
+                    <th width="140">IMEI</th>
+                    <th width="140">IMSI</th>
+                    <th width="140">日期时间</th>
+                    <th width="140">rsrp</th>
+                    <th width="140">经度</th>
+                    <th width="140">纬度</th>
+                    <th width="140">运营商</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                
+                {% for contact in contacts %}
+                <tr>
+                    <td style="text-align: center"></td>
+                    <td style="text-align: center"></td>
+                    <td style="text-align: center">{{ contact.c_imsi }}</td>
+                    <td style="text-align: center">{{ contact.c_date_stamp }}</td>
+                    <td style="text-align: center">{{ contact.c_rsrp }}</td>
+                    <td style="text-align: center">{{ contact.c_lon }}</td>
+                    <td style="text-align: center">{{ contact.c_lat }}</td>
+                    {% if contact.c_isp == "5" %}
+                        <td style="text-align: center">移动</td>
+                    {% elif contact.c_isp == "7" %}
+                        <td style="text-align: center">电信</td>
+                    {% elif contact.c_isp == "9" %}
+                        <td style="text-align: center">联通</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            </center>
+<!--
+            {% for contact in contacts %}
+                {# Each "contact" is a Contact model object. #}
+                {{ contact.store_time }}<br />
+            {% endfor %}
+-->
+            <div class="pagination">
+                <span class="step-links">
+                    {% if contacts.has_previous %}
+                        <a href="?page={{ contacts.previous_page_number }}">previous</a>
+                    {% endif %}
+
+                    <span class="current">
+                        Page {{ contacts.number }} of {{ contacts.paginator.num_pages }}.
+                    </span>
+
+                    {% if contacts.has_next %}
+                        <a href="?page={{ contacts.next_page_number }}">next</a>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
 	</div>
 </body>
 <script>
@@ -66,5 +129,5 @@ function formSubmit()
         document.getElementById("theForm").submit();
     }
 }
-</script>>
+</script>
 </html>
