@@ -97,8 +97,9 @@ def showdataRule2(request):
         # If page is out of range (e.g. 9999), deliver last page of results.
 		contacts = paginator.page(paginator.num_pages)
 	for contact in contacts:
-		time_local = time.localtime(contact.c_time_stamp)
-		contact.c_time_stamp= time.strftime("%Y-%m-%d %H:%M:%S",time_local)
+		#time_local = time.localtime(contact.c_time_stamp)
+		#contact.c_time_stamp= time.strftime("%Y-%m-%d %H:%M:%S",time_local)
+		contact.c_fcn = int(contact.c_fcn)
 	return render(request, 'showdataRule2.html',  {'contacts': contacts})
 
 def downloadDataRule2(request):
