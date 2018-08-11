@@ -127,3 +127,23 @@ def downloadDataRule2(request):
 			response.write(line.c_lon+"\t")
 			response.write(line.c_lat+"\r\n")
 		return response
+
+def ResultIMSI(request):
+	imsi = request.GET.get('imsi_num',0)
+	linetxt_list = LineTxt.objects.filter(c_imsi = imsi).order_by('-c_time_stamp')
+	page = request.GET.get('page',1)
+	paginator = Paginator(linetxt_list, 25) # Show 25 contacts per page
+	try:
+		contacts = paginator.page(page)
+	except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+		contacts = paginator.page(1)
+	except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+		contacts = paginator.page(paginator.num_pages)
+	for contact in contacts:
+		#time_local = time.localtime(contact.c_time_stamp)
+		#contact.c_time_stamp= time.strftime("%Y-%m-%d %H:%M:%S",time_local)
+		contact.c_fcn = int(contact.c_fcn)
+	return render(request, 'showdataRule2.html',  {'contacts': contacts})
+	return response

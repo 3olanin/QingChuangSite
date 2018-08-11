@@ -2,9 +2,10 @@
 <html>
 
 <head>
+    {% load staticfiles %}
     <meta http-equiv="refresh" content="10">
     <title>tuc</title>
-    <h1></h1>
+    <link rel="icon" href="{% static 'image/favicon-128.ico' %}">
 </head>
 {% load staticfiles %}
 <script type="text/javascript" src="{% static 'js/laydate.js' %}"></script>
@@ -34,7 +35,8 @@ h3{margin:10px 0;}
     </div>
     <div style="width: 75%;position:relative;float:left;margin-top: 3%">
         <div style="background-color:#fff;float:left;width: 60%;" >
-        <!--<div class="demo1">
+        <!--    
+        <div >
             <form id="theForm" action="/downloadDataRule2/" method="get">
                 <h3>起始时间</h3>
                 <input id="starttime" name="thestarttime" placeholder="请输入日期" class="laydate-icon" onClick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
@@ -44,6 +46,13 @@ h3{margin:10px 0;}
             </form>
         </div>
         -->
+            
+            <form id="IMSIForm" action="/ResultIMSI/" method="get">
+                <h3>请输入IMSI号</h3>
+                <input id="imsi_num" name="imsi_num" placeholder="请输入IMSI号">
+                <input id="searchimsi" type="button" class="button button-primary"  value="查询" onclick="SearchIMSI()">
+            </form>
+            
             <table style="width:100%;">
                 <thead>
                 <tr style="height: 20px">
@@ -102,6 +111,7 @@ h3{margin:10px 0;}
 </div>
 </body>
 <script>
+<!--
 function checkStartTime()
 {
     if(document.getElementById("starttime").value == '')
@@ -133,5 +143,25 @@ function formSubmit()
         document.getElementById("theForm").submit();
     }
 }
+function checkIMSI()
+{
+    if(document.getElementById("imsi_num").value == '')
+    {
+        alert("输入不得为空！");
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+function SearchIMSI()
+{
+    if(checkIMSI())
+    {
+        document.getElementById("IMSIForm").submit();
+    }
+}
+//-->
 </script>
 </html>
