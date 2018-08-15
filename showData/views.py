@@ -145,5 +145,6 @@ def ResultIMSI(request):
 		#time_local = time.localtime(contact.c_time_stamp)
 		#contact.c_time_stamp= time.strftime("%Y-%m-%d %H:%M:%S",time_local)
 		contact.c_fcn = int(contact.c_fcn)
+	contacts.imsi = imsi
 	return render(request, 'showdataRule2.html',  {'contacts': contacts})
 	return response
