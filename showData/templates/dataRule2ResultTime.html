@@ -3,7 +3,6 @@
 
 <head>
     {% load staticfiles %}
-    <meta http-equiv="refresh" content="900000">
     <title>tuc</title>
     <link rel="icon" href="{% static 'image/favicon-128.ico' %}">
 </head>
@@ -46,13 +45,7 @@ h3{margin:10px 0;}
             </form>
         </div>
         -->
-            
-            <form id="IMSIForm" action="/ResultIMSI/" method="get">
-                <h3>请输入IMSI号</h3>
-                <input id="imsi_num" name="imsi_num" placeholder="请输入IMSI号" value="{{contacts.imsi}}">
-                <input id="searchimsi" type="button" class="button button-primary"  value="查询" onclick="SearchIMSI()">
-            </form>
-            
+            <p>{{contacts.starttime}}</p>
             <table style="width:100%;">
                 <thead>
                 <tr style="height: 20px">
@@ -91,7 +84,7 @@ h3{margin:10px 0;}
             <div class="pagination" align="center">
                 <span class="step-links">
                     {% if contacts.has_previous %}
-                        <a href="?page={{ contacts.previous_page_number }}&imsi_num={{contacts.imsi}}">previous</a>
+                        <a href="?page={{ contacts.previous_page_number }}&thestarttime={{contacts.starttime}}&theendtime={{contacts.endtime}}">previous</a>
                     {% endif %}
 
                     <span class="current">
@@ -99,17 +92,17 @@ h3{margin:10px 0;}
                     </span>
 
                     {% if contacts.has_next %}
-                        <a href="?page={{ contacts.next_page_number }}&imsi_num={{contacts.imsi}}">next</a>
+                        <a href="?page={{ contacts.next_page_number }}&thestarttime={{contacts.starttime}}&theendtime={{contacts.endtime}}">next</a>
                     {% endif %}
                 </span>
             </div>
             <div>
-                <form id="theForm" action="/ResultTime/" method="get" target="_blank">
+                <form id="theForm" action="/downloadDataRule2/" method="get">
                     <h3>起始时间</h3>
-                    <input id="starttime" name="thestarttime" placeholder="请输入日期" class="laydate-icon" onClick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+                    <input id="starttime" name="thestarttime" placeholder="请输入日期" class="laydate-icon" onClick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" value="{{contacts.starttime}}" >
                     <h3>终止时间</h3>
-                    <input id="endtime" name="theendtime" placeholder="请输入日期" class="laydate-icon" onClick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
-                    <input id="formsm" type="button" class="button button-primary"  value="查询下载" onclick="formSubmit()">
+                    <input id="endtime" name="theendtime" placeholder="请输入日期" class="laydate-icon" onClick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" value="{{contacts.endtime}}" >
+                    <input id="formsm" type="button" class="button button-primary"  value="下载" onclick="formSubmit()">
                 </form>
             </div>
         </div>
@@ -150,25 +143,6 @@ function formSubmit()
     if(checkStartTime()&&checkEndTime())
     {
         document.getElementById("theForm").submit();
-    }
-}
-function checkIMSI()
-{
-    if(document.getElementById("imsi_num").value == '')
-    {
-        alert("输入不得为空！");
-        return false;
-    }
-    else
-    {
-        return true;
-    }
-}
-function SearchIMSI()
-{
-    if(checkIMSI())
-    {
-        document.getElementById("IMSIForm").submit();
     }
 }
 //-->

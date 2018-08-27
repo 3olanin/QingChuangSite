@@ -130,7 +130,7 @@ def downloadDataRule2(request):
 
 def ResultIMSI(request):
 	imsi = request.GET.get('imsi_num',0)
-	linetxt_list = LineTxt.objects.filter(c_imsi = imsi).order_by('-c_time_stamp')
+	linetxt_list = LineTxt.objects.filter(c_imsi__contains = imsi).order_by('-c_time_stamp')
 	page = request.GET.get('page',1)
 	paginator = Paginator(linetxt_list, 25) # Show 25 contacts per page
 	try:
@@ -147,4 +147,33 @@ def ResultIMSI(request):
 		contact.c_fcn = int(contact.c_fcn)
 	contacts.imsi = imsi
 	return render(request, 'showdataRule2.html',  {'contacts': contacts})
-	return response
+
+def ResultTime(request):
+	context = {}
+	starttime = request.GET['thestarttime']
+	endtime = request.GET['theendtime']
+	timeArrayStart = time.strptime(starttime, "%Y-%m-%d %H:%M:%S")
+	timeArrayEnd = time.strptime(endtime, "%Y-%m-%d %H:%M:%S")
+	timeStampStart = time.mktime(timeArrayStart)
+	timeStampEnd = time.mktime(timeArrayEnd)
+	context['start'] = timeStampStart
+	context['end'] = timeStampEnd
+	if timeStampStart > timeStampEnd :
+		return render(request, 'downloadFail.html')
+	else :
+		linetxt_list = LineTxt.objects.filter(c_time_stamp__range = (timeStampStart,timeStampEnd)).order_by('-c_time_stamp')
+		page = request.GET.get('page',1)
+		paginator = Paginator(linetxt_list, 25) # Show 25 contacts per page
+		try:
+			contacts = paginator.page(page)
+		except PageNotAnInteger:
+		# If page is not an integer, deliver first page.
+			contacts = paginator.page(1)
+		except EmptyPage:
+		# If page is out of range (e.g. 9999), deliver last page of results.
+			contacts = paginator.page(paginator.num_pages)
+		for contact in contacts:
+			contact.c_fcn = int(contact.c_fcn)
+		contacts.starttime = starttime
+		contacts.endtime = endtime
+		return render(request, 'dataRule2ResultTime.html',  {'contacts': contacts})

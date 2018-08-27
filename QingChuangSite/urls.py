@@ -35,6 +35,7 @@ urlpatterns = [
     path('rule2/',showData_views.showdataRule2),
     path('downloadDataRule2/',showData_views.downloadDataRule2),
     path('ResultIMSI/',showData_views.ResultIMSI),
+    path('ResultTime/',showData_views.ResultTime),
     url(r'^static/(?P<path>.*)$', static.serve,
         {'document_root': settings.STATIC_ROOT}, name='static'),
 ]
