@@ -36,6 +36,10 @@ urlpatterns = [
     path('downloadDataRule2/',showData_views.downloadDataRule2),
     path('ResultIMSI/',showData_views.ResultIMSI),
     path('ResultTime/',showData_views.ResultTime),
+    path('snapshot/',showData_views.snapshot),
+    path('snapshot/snapshotdata/',showData_views.getsnapshotdata),
+    path('ajaxtabledata/',showData_views.gettabledata),
+    path('ResultIMSI/ajaxtabledata/',showData_views.gettabledata),
     url(r'^static/(?P<path>.*)$', static.serve,
         {'document_root': settings.STATIC_ROOT}, name='static'),
 ]

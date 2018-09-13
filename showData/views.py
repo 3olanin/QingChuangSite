@@ -2,6 +2,8 @@ from django.shortcuts import render
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from showData.models import LinePns
 from showData.models import LineTxt
+from django.http import JsonResponse
+from django.core import serializers
 import time
 # Create your views here.
 # coding:utf-8
@@ -177,3 +179,36 @@ def ResultTime(request):
 		contacts.starttime = starttime
 		contacts.endtime = endtime
 		return render(request, 'dataRule2ResultTime.html',  {'contacts': contacts})
+
+def snapshot(request):
+	return render(request, 'snapshotGraph.html')
+
+def getsnapshotdata(request):
+	data_end = int(time.time())
+	data_start = data_end - 60
+	linetxt = LineTxt.objects.filter(c_time_stamp__range = (data_start,data_end)).order_by('-c_time_stamp')
+	jsondata = serializers.serialize("json",linetxt)
+	return HttpResponse(jsondata)
+	#return JsonResponse(linetxt,safe=False)
+
+def gettabledata(request):
+	imsi = request.GET.get('imsi_num',-1)
+	linetxt_list = LineTxt.objects.all().order_by('-c_time_stamp')
+	if imsi != -1 :
+		linetxt_list = LineTxt.objects.filter(c_imsi__contains = imsi).order_by('-c_time_stamp')
+	page = request.GET.get('page',1)
+	paginator = Paginator(linetxt_list, 25) # Show 25 contacts per page
+	try:
+		contacts = paginator.page(page)
+	except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+		contacts = paginator.page(1)
+	except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+		contacts = paginator.page(paginator.num_pages)
+	for contact in contacts:
+		#time_local = time.localtime(contact.c_time_stamp)
+		#contact.c_time_stamp= time.strftime("%Y-%m-%d %H:%M:%S",time_local)
+		contact.c_fcn = int(contact.c_fcn)
+	jsondata = serializers.serialize("json",contacts)
+	return HttpResponse(jsondata)

@@ -24,7 +24,6 @@ SECRET_KEY = '@*4_wm4@u$+8hu#7x8^f+vo=k9tcmc0&+_&m-v74q!(qjpuwhf'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-
 ALLOWED_HOSTS = ['*']
 
 
@@ -115,7 +114,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 

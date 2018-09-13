@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load staticfiles %}
+    <meta charset="UTF-8">
+    <title>tuc</title>
+    <link rel="icon" href="{% static 'image/favicon-128.ico' %}">
+</head>
+{% load staticfiles %}
+<script type="text/javascript" src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+<body>
+    <p id="abc"></p>
+    <canvas id="canv" height="6000" width="6000"> </canvas>
+</body>
+<script type="text/javascript">
+
+    var mW = 600;  //画布的宽
+    var mH = 600;  //画布的高
+    var mData = [['东', 77],
+        ['南', 72],
+        ['西', 46],
+        ['北', 50]];
+    // var imsi = [[113.965313, 22.596680],
+    //     [113.965315, 22.596681],
+    //     [113.966315, 22.596679]];
+    //  var mCount = mData.length; //边数
+    var mCenter = mW /2; //中心点
+    var mRadius = mCenter - 100; //半径(减去的值用于给绘制的文本留空间)
+    //  var mAngle = Math.PI * 2 / mCount; //角度
+    var mCtx = null;
+    var mColorPolygon = '#B8B8B8'; //同心圆颜色
+    var mColorLines = '#B8B8B8'; //顶点连线颜色
+    var mColorText = '#000000';
+    var mCenter_lon = 113.965120
+    var mCenter_lat = 22.595650
+    //var canvas = document.createElement('canvas');  //创建图形容器(画布)
+        //document.body.appendChild(canvas);
+    var canvas = document.getElementById('canv');  //创建图形容器(画布)
+    canvas.height = mH;   //设置容器（画布）的高
+    canvas.width = mW;    //设置容器（画布）的宽
+    mCtx = canvas.getContext('2d');  //getContext('2d') 对象是内建的 HTML5 对象，拥有多种绘制路径、矩形、圆形、字符以及添加图像的方法
+
+    //初始化
+    function drawAll(data_list){
+        mCtx.save();
+        mCtx.clearRect(0,0,canvas.width,canvas.height);
+        mCtx.restore();
+        drawPolygon(mCtx);  //绘制同心圆
+        drawLines(mCtx);    //绘制顶点连线
+        drawText(mCtx);     //绘制文本(North,South,West,East)
+        drawCircle(mCtx,data_list);
+    }
+
+    // 绘制同心圆
+    function drawPolygon(ctx){
+        ctx.save();
+        ctx.strokeStyle = mColorPolygon;
+        var rr = mRadius/ 6; //单位半径
+        for(var i = 0; i < 6; i ++){  //  画6个圈
+                var r = (i+1)*rr;
+                ctx.beginPath();
+                ctx.arc(mCenter,mCenter,r,0,2*Math.PI);
+                ctx.stroke();
+                ctx.closePath();
+
+        }
+        ctx.restore();
+    }
+
+    //顶点连线
+    function drawLines(ctx){
+        ctx.save();
+        ctx.beginPath();
+        ctx.strokeStyle = mColorLines;
+        for(var i = 0; i < 4; i ++){
+            var x = mCenter + mRadius * Math.cos(Math.PI/2 * i); 
+            var y = mCenter + mRadius * Math.sin(Math.PI/2 * i);
+            ctx.moveTo(mCenter, mCenter);
+            ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    //绘制文本(North,South,West,East)
+    function drawText(ctx){ 
+        ctx.save();
+        var fontSize = mCenter / 12;
+        ctx.font = fontSize + 'px Microsoft Yahei';
+        ctx.fillStyle = mColorText;
+        for(var i = 0; i < 4; i ++){
+            var x = mCenter + mRadius * Math.cos(Math.PI/2 * i);
+            var y = mCenter + mRadius * Math.sin(Math.PI/2 * i);
+            if( Math.PI/2 * i >= 0 && Math.PI/2 * i <= Math.PI / 2 ){
+                ctx.fillText(mData[i][0], x, y + fontSize);
+            }else if(Math.PI/2 * i > Math.PI / 2 && Math.PI/2 * i <= Math.PI){
+                ctx.fillText(mData[i][0], x - ctx.measureText(mData[i][0]).width, y + fontSize);
+            }else if(Math.PI/2 * i > Math.PI && Math.PI/2 * i <= Math.PI * 3 / 2){
+                ctx.fillText(mData[i][0], x - ctx.measureText(mData[i][0]).width, y);
+            }else{
+                ctx.fillText(mData[i][0], x, y);
+            }
+        }
+        ctx.restore();
+    }
+    //画点
+    /*function drawCircle(ctx){
+        ctx.save();
+        var r = mCenter / 26;
+        for(var i = 0; i < 4; i ++){
+            var x = mCenter + mRadius * Math.cos(Math.PI/2 * i) * mData[i][1] / 100;
+            var y = mCenter + mRadius * Math.sin(Math.PI/2 * i) * mData[i][1] / 100;
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255, 0, 0, 0.8)';
+            ctx.fill();
+            //ctx.closePath();
+        }
+        ctx.restore();
+    }*/
+
+    function drawCircle(ctx,data_list){
+        ctx.save();
+        var r = mCenter / 26;
+        var i = 0;
+        for(var i = 0; i < data_list.length; i ++){
+            // var x = ( mCenter + mRadius/6 ) + ( data_list[i].fields.c_lon - mCenter_lon ) * 400 * ( 5 * mRadius/6 );
+            // var y = ( mCenter - mRadius/6 ) - ( data_list[i].fields.c_lat - mCenter_lat ) * 400000 * ( 5 * mRadius/6 );
+            var x_diff = data_list[i].fields.c_lon * 1000000 - mCenter_lon * 1000000;
+            var y_diff = data_list[i].fields.c_lat * 1000000 - mCenter_lat * 1000000;
+            var x = mCenter;
+            var y = mCenter;
+            x = x + x_diff;  
+            y = y - y_diff;   //由于坐标轴，此处用y-y_diff
+
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255, 0, 0, 0.8)';
+            ctx.fill();
+            ctx.arc(x, y, r/2, 0, Math.PI * 2);
+            ctx.font = "bold 18pt Arial";  // 字体大小，样式
+            ctx.fillStyle = '#000000';  // 颜色
+            ctx.textAlign = 'center';  // 位置
+            ctx.textBaseline = 'middle';
+            ctx.moveTo(x, y);  // 文字填充位置
+            ctx.fillText(data_list[i].fields.c_imsi,x,y);
+            ctx.closePath();
+        }
+        ctx.restore();
+    }
+</script>
+<script></script>
+<script type="text/javascript">
+$("#abc").html("location");
+setInterval("getsnapdata()",3000);
+function getsnapdata() {
+    $.ajax({
+        type: "GET",
+        url: "snapshotdata/",
+        timeout: 60000,
+        async: true,
+        data: "time=",
+        success: function(data, textStatus) {
+            //var data_list = data.parseJSON();
+            var data_list =  eval('(' + data + ')');
+            drawAll(data_list);
+            //$("#abc").html(data_list[0].fields.c_time_stamp);
+            //$("#abc").html(data);
+
+
+        }
+    });
+}
+</script>
+</html>
