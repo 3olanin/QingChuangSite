@@ -124,7 +124,7 @@ def downloadDataRule2(request):
 		for line in linetxt:
 			response.write(line.c_imsi+"\t")
 			response.write(line.c_tmsi+"\t")
-			response.write(line.c_fcn+"\t")
+			#response.write(line.c_fcn+"\t")
 			response.write(line.c_time+"\t")
 			response.write(line.c_lon+"\t")
 			response.write(line.c_lat+"\r\n")

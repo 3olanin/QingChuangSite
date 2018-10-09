@@ -7,6 +7,9 @@ class FileTxt(models.Model):
 	t_identifier = models.CharField(max_length=255)
 	t_time = models.CharField(max_length=255)
 	t_time_stamp = models.BigIntegerField()
+	t_mac = models.CharField(max_length=255)
+	t_ip = models.CharField(max_length=255)
+	machine_type = models.IntegerField()
 	def __str__(self):
 		return self.fileName
 
@@ -20,9 +23,17 @@ class LineTxt(models.Model):
 	c_tmsi = models.CharField(max_length=255)
 	c_fcn = models.CharField(max_length=255)
 	c_time = models.CharField(max_length=255)
-	c_time_stamp = models.BigIntegerField() 
+	c_time_stamp = models.BigIntegerField()
 	c_lon = models.CharField(max_length=255)
 	c_lat = models.CharField(max_length=255)
+	machine_type = models.IntegerField()
+	t_mac = models.CharField(max_length=255)
+	t_ip = models.CharField(max_length=255)
+	c_mac = models.CharField(max_length=255)
+	c_imei = models.CharField(max_length=255)
+	c_rsrp = models.CharField(max_length=255)
+	c_isp = models.CharField(max_length=255)
+
 
 
 class FilePns(models.Model):

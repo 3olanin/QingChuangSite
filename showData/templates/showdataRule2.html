@@ -3,11 +3,13 @@
 
 <head>
     {% load staticfiles %}
+<!--     <meta http-equiv="refresh" content="900000"> -->
     <title>tuc</title>
     <link rel="icon" href="{% static 'image/favicon-128.ico' %}">
 </head>
 {% load staticfiles %}
 <script type="text/javascript" src="{% static 'js/laydate.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
 <!--
 <style type="text/css">
 *{margin:0;padding:0;list-style:none;}
@@ -23,6 +25,7 @@ h3{margin:10px 0;}
 </style>
 -->
 <body>
+    <p id="abc"></p>
 <div style="display:inline-block;width:100%;min-width: 1551px;">
     <div style="width:25%;position:relative;float:left">
         <div style="position:relative;margin-left: 10%;margin-top: 15%">
@@ -45,7 +48,13 @@ h3{margin:10px 0;}
             </form>
         </div>
         -->
-            <p>{{contacts.starttime}}</p>
+            
+            <form id="IMSIForm" action="/ResultIMSI/" method="get">
+                <h3>请输入IMSI号</h3>
+                <input id="imsi_num" name="imsi_num" placeholder="请输入IMSI号" value="{{contacts.imsi}}">
+                <input id="searchimsi" type="button" class="button button-primary"  value="查询" onclick="SearchIMSI()">
+            </form>
+            
             <table style="width:100%;">
                 <thead>
                 <tr style="height: 20px">
@@ -60,7 +69,7 @@ h3{margin:10px 0;}
                     <th width="140">纬度</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody id="tabledata">
                 {% for contact in contacts %}
                 <tr>
                     <td style="text-align: center">{{ contact.c_imsi }}</td>
@@ -94,9 +103,9 @@ h3{margin:10px 0;}
                 </tbody>
             </table>
             <div class="pagination" align="center">
-                <span class="step-links">
+                <span id="tabledata" class="step-links">
                     {% if contacts.has_previous %}
-                        <a href="?page={{ contacts.previous_page_number }}&thestarttime={{contacts.starttime}}&theendtime={{contacts.endtime}}">previous</a>
+                        <a href="?page={{ contacts.previous_page_number }}&imsi_num={{contacts.imsi}}">previous</a>
                     {% endif %}
 
                     <span class="current">
@@ -104,17 +113,17 @@ h3{margin:10px 0;}
                     </span>
 
                     {% if contacts.has_next %}
-                        <a href="?page={{ contacts.next_page_number }}&thestarttime={{contacts.starttime}}&theendtime={{contacts.endtime}}">next</a>
+                        <a href="?page={{ contacts.next_page_number }}&imsi_num={{contacts.imsi}}">next</a>
                     {% endif %}
                 </span>
             </div>
             <div>
-                <form id="theForm" action="/downloadDataRule2/" method="get">
+                <form id="theForm" action="/ResultTime/" method="get" target="_blank">
                     <h3>起始时间</h3>
-                    <input id="starttime" name="thestarttime" placeholder="请输入日期" class="laydate-icon" onClick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" value="{{contacts.starttime}}" >
+                    <input id="starttime" name="thestarttime" placeholder="请输入日期" class="laydate-icon" onClick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
                     <h3>终止时间</h3>
-                    <input id="endtime" name="theendtime" placeholder="请输入日期" class="laydate-icon" onClick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" value="{{contacts.endtime}}" >
-                    <input id="formsm" type="button" class="button button-primary"  value="下载" onclick="formSubmit()">
+                    <input id="endtime" name="theendtime" placeholder="请输入日期" class="laydate-icon" onClick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+                    <input id="formsm" type="button" class="button button-primary"  value="查询下载" onclick="formSubmit()">
                 </form>
             </div>
         </div>
@@ -157,6 +166,96 @@ function formSubmit()
         document.getElementById("theForm").submit();
     }
 }
+function checkIMSI()
+{
+    if(document.getElementById("imsi_num").value == '')
+    {
+        alert("输入不得为空！");
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+function SearchIMSI()
+{
+    if(checkIMSI())
+    {
+        document.getElementById("IMSIForm").submit();
+    }
+}
 //-->
+</script>
+<script></script>
+<script type="text/javascript">
+setInterval("gettabledata()",3000);
+function gettabledata() {
+    $.ajax({
+        type: "GET",
+        url: "ajaxtabledata/",
+        timeout: 60000,
+        async: true,
+        data: "page={{ contacts.number }}&imsi_num={{contacts.imsi}}",
+        success: function(data, textStatus) {
+            //var data_list = data.parseJSON();
+            var data_list =  eval('(' + data + ')');
+            updatetbody(data_list);
+            //alert(data);
+            //$("#abc").html(data);
+            //$("#abc").html(data);
+
+
+        }
+    });
+}
+function updatetbody(data_list){
+    var tbody_content = "";
+    for(var i = 0; i < data_list.length; i ++){
+        var c_imsi = data_list[i].fields.c_imsi;
+        var c_fcn = data_list[i].fields.c_fcn;
+        var c_time = data_list[i].fields.c_time;
+        var c_lon = data_list[i].fields.c_lon;
+        var c_lat = data_list[i].fields.c_lat;
+        var machine_type = data_list[i].fields.machine_type;
+        var c_isp = data_list[i].fields.c_isp;
+        if(machine_type == 1){
+            if(c_isp == 5){
+                c_isp = "移动";
+            }
+            else if(c_isp == 7){
+                c_isp = "电信";
+            }
+            else if(c_isp == 9){
+                c_isp = "联通";
+            }
+            else{
+                c_isp = "未知";
+            }
+        }
+        else{
+            if(c_fcn >= 37900 && c_fcn <= 38950){
+                c_isp = "移动";
+            }
+            else if(c_fcn == 1825 || c_fcn == 100){
+                c_isp = "电信";
+            }
+            else if(c_fcn == 1650){
+                c_isp = "联通";
+            }
+            else{
+                c_isp = "未知";
+            }
+        }
+        tbody_content += '<tr>';
+        tbody_content += '<td style="text-align: center">'+c_imsi+'</td>';
+        tbody_content += '<td style="text-align: center">'+c_isp+'</td>' ;
+        tbody_content += '<td style="text-align: center">'+c_time+'</td>';
+        tbody_content += '<td style="text-align: center">'+c_lon+'</td>';
+        tbody_content += '<td style="text-align: center">'+c_lat+'</td>';
+        tbody_content += '</tr>';
+    }
+    $("#tabledata").html(tbody_content);
+};
 </script>
 </html>
